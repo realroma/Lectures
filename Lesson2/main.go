@@ -14,15 +14,15 @@ func pri(m map[string]string) {
 	}
 }
 
-func add(m map[string]string, m2 map[string]string) map[string]string {
-	for i, v := range m2 {
-		_, b := m[v]
-		if b == false {
-			m[i] = m2[v]
-			m[i] = m2[i]
+// В чём суть?: Мы принимаем любое количество значений типа map в виде списка. Распаковываем его и все данные посредством цикла заливаем в новую оболочку.
+func add(m ...map[string]string) map[string]string {
+	mr := make(map[string]string)
+	for _, n := range m {
+		for i, v := range n {
+			mr[i] = v
 		}
 	}
-	return m
+	return mr
 }
 
 func er(err error) {
@@ -38,15 +38,14 @@ func parseFlag() {
 }
 func main() {
 	parseFlag()
-	//r := bufio.NewReader()
-	//fmt.Println(r)
 	a, err := crawler.Scan("https://go.dev", 3)
 	er(err)
 	b, err := crawler.Scan("http://habr.com", 2)
 	er(err)
 	c, err := crawler.Scan("https://html5book.ru/hyperlinks-in-html/", 4)
 	er(err)
-	m := add(a, b)
-	m2 := add(m, c)
-	pri(m2)
+	m := add(a, b, c)
+	// r := bufio.NewScanner()
+	// fmt.Println(r)
+	pri(m)
 }
