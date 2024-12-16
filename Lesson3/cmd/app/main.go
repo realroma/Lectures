@@ -3,10 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"strings"
-	"text/scanner"
 
-	"project/Lectures/Lesson2/crawler"
+	"project/Lectures/Lesson3/pkg/crawler"
+	"project/Lectures/Lesson3/pkg/sorter"
 )
 
 func pri(m map[string]string) {
@@ -33,18 +32,6 @@ func er(err error) {
 	}
 }
 
-func Sc(m map[string]string, w string) {
-	var r scanner.Scanner
-	for _, v := range m {
-		r.Init(strings.NewReader(v))
-		for tok := r.Scan(); tok != scanner.EOF; tok = r.Scan() {
-			if r.TokenText() == w {
-				fmt.Println(v)
-			}
-		}
-	}
-}
-
 func parseFlag() string {
 	f := flag.String("s", "", "Ссылка на сайт о котором надо получить информацию.") //Создаём ссылку на флаг(Типо -g при использовании команд.) s название флага, "" - значение по умолчанию, комментарий.
 	flag.Parse()                                                                    //Без этого флаг будет выдаватся по умолчанию.
@@ -52,13 +39,16 @@ func parseFlag() string {
 }
 func main() {
 	word := parseFlag()
-	a, err := crawler.Scan("https://go.dev", 3)
+	a := crawler.New("https://go.dev", 3)
+	b := crawler.New("http://habr.com", 2)
+	c := crawler.New("https://html5book.ru/hyperlinks-in-html/", 4)
+	ma, err := a.Scan()
 	er(err)
-	b, err := crawler.Scan("http://habr.com", 2)
+	mb, err := b.Scan()
 	er(err)
-	c, err := crawler.Scan("https://html5book.ru/hyperlinks-in-html/", 4)
+	mc, err := c.Scan()
 	er(err)
-	m := add(a, b, c)
+	m := add(ma, mb, mc)
 	pri(m)
-	Sc(m, word)
+	sorter.Sorter(m, word)
 }
