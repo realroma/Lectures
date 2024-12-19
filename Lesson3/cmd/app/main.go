@@ -39,6 +39,7 @@ func parseFlag() string {
 }
 func main() {
 	word := parseFlag()
+
 	a := crawler.New("https://go.dev", 3)
 	b := crawler.New("http://habr.com", 2)
 	c := crawler.New("https://html5book.ru/hyperlinks-in-html/", 4)
@@ -48,7 +49,9 @@ func main() {
 	er(err)
 	mc, err := c.Scan()
 	er(err)
+
 	m := add(ma, mb, mc)
 	pri(m)
 	sorter.Sorter(m, word)
+
 }
