@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"project/Lectures/Lesson3/pkg/crawler"
+	"project/Lectures/Lesson3/pkg/index"
 	"project/Lectures/Lesson3/pkg/sorter"
 )
 
@@ -54,4 +55,5 @@ func main() {
 	pri(m)
 	sorter.Sorter(m, word)
 
+	fmt.Println(index.Indexer(m))
 }
