@@ -53,7 +53,8 @@ func main() {
 
 	m := add(ma, mb, mc)
 	pri(m)
-	sorter.Sorter(m, word)
 
-	fmt.Println(index.Indexer(m))
+	index.Indexer(m)
+
+	sorter.Sorter(m, word)
 }
