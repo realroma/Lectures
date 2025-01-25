@@ -11,24 +11,28 @@ type Index struct {
 	Title string
 }
 
-func Const(Url string, Title string, dict []Index) []Index {
-	var id int = 1
-	if len(dict) != 0 {
-		id = len(dict) + 1
+func Const(Url string, Title string, dictIndex []Index) []Index {
+	var id int = 0
+
+	//Если список проиндексированных ссылок не пустой, добавляем в конец.
+	if len(dictIndex) != 0 {
+		id = dictIndex[len(dictIndex)].ID + 1
 	}
+
+	//Задаём структуру добавляемых в конец структур.
 	c := Index{
 		ID:    id,
 		URL:   Url,
 		Title: Title,
 	}
 	id++
-	dict = append(dict, c)
-	return dict
+	dictIndex = append(dictIndex, c)
+	return dictIndex
 }
 
 // Проходит по всем структурам массива вынимая название и разбирая его на слова, возвращая map слов и их Id.
-func add(mapWord map[string][]int, dict []Index) map[string][]int {
-	for _, v := range dict {
+func add(mapWord map[string][]int, dictIndex []Index) map[string][]int {
+	for _, v := range dictIndex {
 		arr := sorter.Sort(v.Title)
 		for _, a := range arr {
 			if len(a) > 1 {
@@ -38,32 +42,44 @@ func add(mapWord map[string][]int, dict []Index) map[string][]int {
 			}
 		}
 	}
-
 	return mapWord
 }
 
-//  func read(w string) {
-//  	var dict []Index
-// 	var mapWord map[string][]int
-// 	mapWord = add(mapWord, dict)
+func Read(w string, mW map[string][]int) {
+	dict := make([]int, 0)
 
-//  }
+	arr := sorter.Sort(w)
+	for _, a := range arr {
+		fmt.Println("A, in read: ", a)
+		v, ok := mW[a]
+		fmt.Println(ok)
+		if ok {
+			fmt.Println(cap(dict))
+			if cap(dict) == 0 {
+				dict = v
+			}
+			if cap(dict) <= len(v) {
+				dict = sorter.Elements(dict, mW[a])
+				fmt.Println("Dict: ", dict)
+			}
+		}
+	}
+}
 
 func Indexer(m map[string]string) map[string][]int {
 	mapWord := make(map[string][]int)
-	var dict []Index
+	dictIndex := make([]Index, 0)
+
+	//Проходим по всем ссылкам и разбираем их на переменные.
 	for Url, Title := range m {
-		dict = Const(Url, Title, dict)
-		mapWord = add(mapWord, dict)
+		Const(Url, Title, dictIndex)
+		//Добавляем слова из ссылок в Map для индексации.
+		mapWord = add(mapWord, dictIndex)
 	}
-	// for _, v := range dict {
-	// 	fmt.Println("Id: ", v.ID)
-	// 	fmt.Println("Title: ", v.Title)
-	// 	fmt.Println("Url: ", v.URL)
-	// }
 	for i, v := range mapWord {
 		fmt.Println("Id cm", i)
 		fmt.Println("Result Indexer:", v)
 	}
+	fmt.Println(dictIndex)
 	return mapWord
 }

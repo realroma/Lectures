@@ -38,9 +38,12 @@ func parseFlag() string {
 	flag.Parse()                                                                    //Без этого флаг будет выдаватся по умолчанию.
 	return *f
 }
+
 func main() {
+	//Делаем флаг для поиска по словам в консоли.
 	word := parseFlag()
 
+	//Получаем сслки.
 	a := crawler.New("https://go.dev", 3)
 	b := crawler.New("http://habr.com", 2)
 	c := crawler.New("https://html5book.ru/hyperlinks-in-html/", 4)
@@ -51,10 +54,14 @@ func main() {
 	mc, err := c.Scan()
 	er(err)
 
+	//Объединяем ссылки в единое.
 	m := add(ma, mb, mc)
 	pri(m)
 
-	index.Indexer(m)
+	itd := index.Indexer(m)
 
 	sorter.Sorter(m, word)
+	if word != "" {
+		index.Read(word, itd)
+	}
 }
