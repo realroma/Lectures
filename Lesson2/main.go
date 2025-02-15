@@ -50,11 +50,10 @@ func parseFlag() string {
 	flag.Parse()                                                                    //Без этого флаг будет выдаватся по умолчанию.
 	return *f
 }
+
 func main() {
 	word := parseFlag()
-
 	a, err := crawler.Scan("https://go.dev", 3)
-
 	er(err)
 	b, err := crawler.Scan("http://habr.com", 2)
 	er(err)
