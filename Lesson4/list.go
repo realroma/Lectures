@@ -65,17 +65,20 @@ func (l *List) Pop() *List {
 }
 
 func Swap(e *Elem) {
-	next := e.next
-	prev := e.prev
+	e.next, e.prev = e.prev, e.next
+
+	//Старая версия, нужны дополнительные переменные, но теперь от этого можно отказаться.
+	// next := e.next
+	// prev := e.prev
 	//fmt.Printf("befor\n next: %v,\n prev: %v\n", next, prev)
-	e.prev = next
-	e.next = prev
+	// e.prev = next
+	// e.next = prev
 	//fmt.Printf("after\n next: %v,\n prev: %v\n", e.next, e.prev)
 }
 
 // Reverse разворачивает список.
 func (l *List) Reverse() *List {
-	Swap(l.root)
+	l.root.prev, l.root.next = l.root.next, l.root.prev //Равносильно swap, только чуть больше по объёму.
 	l.root = l.root.prev
 	for l.root.next.Val != nil {
 

@@ -1,0 +1,85 @@
+package index
+
+import (
+	"fmt"
+	"project/Lectures/Lesson5/pkg/sorter"
+)
+
+type Index struct {
+	ID    int
+	URL   string
+	Title string
+}
+
+func Const(Url string, Title string, dictIndex []Index) []Index {
+	var id int = 0
+
+	//Если список проиндексированных ссылок не пустой, добавляем в конец.
+	if len(dictIndex) != 0 {
+		id = dictIndex[len(dictIndex)].ID + 1
+	}
+
+	//Задаём структуру добавляемых в конец структур.
+	c := Index{
+		ID:    id,
+		URL:   Url,
+		Title: Title,
+	}
+	id++
+	dictIndex = append(dictIndex, c)
+	return dictIndex
+}
+
+// Проходит по всем структурам массива вынимая название и разбирая его на слова, возвращая map слов и их Id.
+func add(mapWord map[string][]int, dictIndex []Index) map[string][]int {
+	for _, v := range dictIndex {
+		arr := sorter.Sort(v.Title)
+		for _, a := range arr {
+			if len(a) > 1 {
+				var ids []int
+				ids = append(ids, v.ID)
+				mapWord[a] = ids
+			}
+		}
+	}
+	return mapWord
+}
+
+func Read(w string, mW map[string][]int) {
+	dict := make([]int, 0)
+
+	arr := sorter.Sort(w)
+	for _, a := range arr {
+		fmt.Println("A, in read: ", a)
+		v, ok := mW[a]
+		fmt.Println(ok)
+		if ok {
+			fmt.Println(cap(dict))
+			if cap(dict) == 0 {
+				dict = v
+			}
+			if cap(dict) <= len(v) {
+				dict = sorter.Elements(dict, mW[a])
+				fmt.Println("Dict: ", dict)
+			}
+		}
+	}
+}
+
+func Indexer(m map[string]string) map[string][]int {
+	mapWord := make(map[string][]int)
+	dictIndex := make([]Index, 0)
+
+	//Проходим по всем ссылкам и разбираем их на переменные.
+	for Url, Title := range m {
+		Const(Url, Title, dictIndex)
+		//Добавляем слова из ссылок в Map для индексации.
+		mapWord = add(mapWord, dictIndex)
+	}
+	for i, v := range mapWord {
+		fmt.Println("Id cm", i)
+		fmt.Println("Result Indexer:", v)
+	}
+	fmt.Println(dictIndex)
+	return mapWord
+}
