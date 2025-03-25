@@ -5,12 +5,18 @@ import (
 	"testing"
 )
 
-func TestCreateFile(t *testing.T) {
-	CheckSave()
+func TestReadFile(t *testing.T) {
+	want := map[string]string{
+		"Some": "value",
+	}
+	got := ReadFile()
+	if got["Some"] != want["Some"] {
+		t.Fatalf("Получили %v, ожидалось %v", got["Some"], want["Some"])
+	}
 }
 
 func TestWriteFile(t *testing.T) {
-	want := `{"Some":1}`
+	want := `{"Some":"value"}`
 	WriteFile()
 	text, err := os.ReadFile("Link.txt")
 	if err != nil {

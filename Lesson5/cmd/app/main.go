@@ -44,9 +44,9 @@ func main() {
 	word := parseFlag()
 
 	//Получаем сслки.
-	a := crawler.New("https://go.dev", 3)
+	a := crawler.New("https://go.dev", 1)
 	b := crawler.New("http://habr.com", 2)
-	c := crawler.New("https://html5book.ru/hyperlinks-in-html/", 4)
+	c := crawler.New("https://html5book.ru/hyperlinks-in-html/", 3)
 	fmt.Println(a)
 	fmt.Println(b)
 	fmt.Println(c)
