@@ -1,6 +1,8 @@
 package filer
 
 import (
+	"encoding/json"
+	"log"
 	"os"
 	"testing"
 )
@@ -9,7 +11,10 @@ func TestReadFile(t *testing.T) {
 	want := map[string]string{
 		"Some": "value",
 	}
-	got := ReadFile()
+
+	f := New("Link.txt")
+	got := Read(f)
+
 	if got["Some"] != want["Some"] {
 		t.Fatalf("Получили %v, ожидалось %v", got["Some"], want["Some"])
 	}
@@ -17,7 +22,18 @@ func TestReadFile(t *testing.T) {
 
 func TestWriteFile(t *testing.T) {
 	want := `{"Some":"value"}`
-	WriteFile()
+	m := map[string]string{
+		"Some": "value",
+	}
+
+	am, err := json.Marshal(m)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	f := New("Link.txt")
+	Write(f, am)
+
 	text, err := os.ReadFile("Link.txt")
 	if err != nil {
 		t.Fatal(err)
