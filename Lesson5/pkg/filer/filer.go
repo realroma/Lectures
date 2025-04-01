@@ -6,10 +6,6 @@ import (
 	"os"
 )
 
-type file struct {
-	name string
-}
-
 func New(path string) *os.File {
 	if path == "" {
 		path = "Link.txt"
