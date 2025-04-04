@@ -2,7 +2,6 @@ package filer
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 )
@@ -18,21 +17,13 @@ func New(path string) *os.File {
 	return f
 }
 
-func CheckFile() *[]byte {
-	var b []byte
+func OpenFile() *os.File {
 	f, err := os.OpenFile("Link.txt", os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-
-	g, err := f.Read(b)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(g)
-
-	return &b
+	return f
 }
 
 // Возвращать он ничего не должен.
@@ -49,7 +40,6 @@ func Read(f *os.File) map[string]string {
 	if err != nil {
 		log.Fatal()
 	}
-	fmt.Println(file)
 	//Создаём переменную в которую данные поместятся.
 	m := make(map[string]string)
 

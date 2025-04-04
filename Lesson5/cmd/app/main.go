@@ -1,10 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 
 	"project/Lectures/Lesson5/pkg/crawler"
+	"project/Lectures/Lesson5/pkg/filer"
 	"project/Lectures/Lesson5/pkg/index"
 	"project/Lectures/Lesson5/pkg/sorter"
 )
@@ -39,11 +42,8 @@ func parseFlag() string {
 	return *f
 }
 
-func main() {
-	//Делаем флаг для поиска по словам в консоли.
-	word := parseFlag()
-
-	//Получаем сслки.
+func Scan(m map[string]string) map[string]string {
+	// Получаем сслки.
 	a := crawler.New("https://go.dev", 1)
 	b := crawler.New("http://habr.com", 2)
 	c := crawler.New("https://html5book.ru/hyperlinks-in-html/", 3)
@@ -56,14 +56,38 @@ func main() {
 	er(err)
 	mc, err := c.Scan()
 	er(err)
+	m = add(ma, mb, mc)
+	pri(m)
+	return m
+}
+
+func main() {
+	//Делаем флаг для поиска по словам в консоли.
+	word := parseFlag()
+	var m map[string]string
 
 	//Объединяем ссылки в единое.
-
 	//Тут наверное надо переписать на ссылки чтобы не задействовало много памяти в будущем.
-	m := add(ma, mb, mc)
-	pri(m)
+
+	file := filer.New("")
+	filer.OpenFile()
+	fmt.Println(file.Name())
+
+	m = filer.Read(file)
+	for i, v := range m {
+		fmt.Println("i:", i)
+		fmt.Println("v:", v)
+	}
+
+	byteMap, err := json.Marshal(m)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	filer.Write(file, byteMap)
 
 	itd := index.Indexer(m)
+	fmt.Println(itd)
 
 	sorter.Sorter(m, word)
 	if word != "" {

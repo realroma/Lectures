@@ -11,23 +11,20 @@ type Index struct {
 	Title string
 }
 
-func Const(Url string, Title string, dictIndex []Index) []Index {
-	var id int = 0
-
+func SerializeIndex(Url string, Title string, id int) Index {
 	//Если список проиндексированных ссылок не пустой, добавляем в конец.
-	if len(dictIndex) != 0 {
-		id = dictIndex[len(dictIndex)].ID + 1
-	}
-
-	//Задаём структуру добавляемых в конец структур.
+	id++
+	fmt.Println("Id:", id)
+	//Задаём структуру добавляляемых в конец структур.
 	c := Index{
 		ID:    id,
 		URL:   Url,
 		Title: Title,
 	}
-	id++
-	dictIndex = append(dictIndex, c)
-	return dictIndex
+	fmt.Println(c)
+
+	//Файл постоянно перезаписывается. Индекс всегда нулевой. По итогу возвращается ноль. Надо
+	return c
 }
 
 // Проходит по всем структурам массива вынимая название и разбирая его на слова, возвращая map слов и их Id.
@@ -72,7 +69,8 @@ func Indexer(m map[string]string) map[string][]int {
 
 	//Проходим по всем ссылкам и разбираем их на переменные.
 	for Url, Title := range m {
-		Const(Url, Title, dictIndex)
+		fmt.Println("For", dictIndex)
+		dictIndex = append(dictIndex, SerializeIndex(Url, Title, len(dictIndex)))
 		//Добавляем слова из ссылок в Map для индексации.
 		mapWord = add(mapWord, dictIndex)
 	}
