@@ -2,13 +2,13 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"log"
 
 	"project/Lectures/Lesson5/pkg/crawler"
 	"project/Lectures/Lesson5/pkg/filer"
 	"project/Lectures/Lesson5/pkg/index"
+	"project/Lectures/Lesson5/pkg/lecture_flag"
 	"project/Lectures/Lesson5/pkg/sorter"
 )
 
@@ -32,27 +32,25 @@ func add(m ...map[string]string) map[string]string {
 
 func er(err error) {
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
-}
-
-func parseFlag() string {
-	f := flag.String("s", "", "Ссылка на сайт о котором надо получить информацию.") //Создаём ссылку на флаг(Типо -g при использовании команд.) s название флага, "" - значение по умолчанию, комментарий.
-	flag.Parse()                                                                    //Без этого флаг будет выдаватся по умолчанию.
-	return *f
 }
 
 func Scan(m map[string]string) map[string]string {
 	// Получаем сслки.
+	fmt.Println("Site")
 	a := crawler.New("https://go.dev", 1)
-	b := crawler.New("http://habr.com", 2)
+	b := crawler.New("http://wikipedia.org", 1)
 	c := crawler.New("https://html5book.ru/hyperlinks-in-html/", 3)
-	fmt.Println(a)
-	fmt.Println(b)
-	fmt.Println(c)
+	// fmt.Println(a)
+	// fmt.Println(b)
+	// fmt.Println(c)
+	fmt.Println("Add")
 	ma, err := a.Scan()
+	fmt.Println(m)
 	er(err)
 	mb, err := b.Scan()
+	fmt.Println(m)
 	er(err)
 	mc, err := c.Scan()
 	er(err)
@@ -61,35 +59,50 @@ func Scan(m map[string]string) map[string]string {
 	return m
 }
 
+type s struct {
+	field  string
+	field2 string
+}
+
 func main() {
 	//Делаем флаг для поиска по словам в консоли.
-	word := parseFlag()
-	var m map[string]string
+	word := lecture_flag.ParseFlag()
+	var site map[string]string
 
 	//Объединяем ссылки в единое.
-	//Тут наверное надо переписать на ссылки чтобы не задействовало много памяти в будущем.
+	name := "Link.txt"
+	filer.New(name)
 
-	file := filer.New("")
-	filer.OpenFile()
-	fmt.Println(file.Name())
+	f, err := filer.OpenFile(name)
+	fmt.Println(f.Name())
+	er(err)
 
-	m = filer.Read(file)
-	for i, v := range m {
-		fmt.Println("i:", i)
-		fmt.Println("v:", v)
-	}
+	fmt.Println("Scan")
+	moll := Scan(site)
 
-	byteMap, err := json.Marshal(m)
-	if err != nil {
-		log.Fatal(err)
-	}
+	fmt.Println("Marshal")
+	b, err := json.Marshal(moll)
+	er(err)
 
-	filer.Write(file, byteMap)
+	fmt.Println("Write")
+	f.Write(b)
 
-	itd := index.Indexer(m)
+	fmt.Println("Read")
+	_, err = filer.Read(f, b)
+
+	f.Read(b)
+
+	// fmt.Println("Read b:", b)
+
+	m := make(map[string]string)
+	err = json.Unmarshal(b, &m)
+	er(err)
+	fmt.Println(m)
+
+	itd := index.Indexer(moll)
 	fmt.Println(itd)
 
-	sorter.Sorter(m, word)
+	sorter.Sorter(moll, word)
 	if word != "" {
 		index.Read(word, itd)
 	}

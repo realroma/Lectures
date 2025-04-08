@@ -28,9 +28,7 @@ func New(url string, depth int) *Crawler {
 // с учётом глубины перехода по ссылкам, указанной в Depth.
 func (c *Crawler) Scan() (data map[string]string, err error) {
 	data = make(map[string]string)
-
 	parse(c.Url, c.Url, c.Depth, data)
-
 	return data, nil
 }
 
@@ -53,7 +51,6 @@ func parse(url, baseurl string, depth int, data map[string]string) error {
 	}
 
 	data[url] = pageTitle(page)
-
 	links := pageLinks(nil, page)
 	for _, link := range links {
 		if data[link] == "" && strings.HasPrefix(link, baseurl) {

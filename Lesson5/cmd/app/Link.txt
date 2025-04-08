@@ -1,0 +1,1 @@
+{"http://wikipedia.org":"Wikipedia","https://go.dev":"The Go Programming Language","https://html5book.ru/hyperlinks-in-html/":"HTML-ссылки","https://html5book.ru/hyperlinks-in-html/#comments":"HTML-ссылки"}

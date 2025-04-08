@@ -1,52 +1,44 @@
 package filer
 
 import (
-	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"os"
 )
 
-func New(path string) *os.File {
-	if path == "" {
-		path = "Link.txt"
+func New(name string) *os.File {
+	gw, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
 	}
-	f, err := os.OpenFile(path, os.O_CREATE, 0666)
+
+	// Реализация если используется vsl. Сделать потом проверку для рабочей директории
+	err = os.Chdir(gw + "/Lectures/Lesson5/cmd/app")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if name == "" {
+		name = "Link.txt"
+	}
+
+	f, err := os.Create(name)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return f
 }
 
-func OpenFile() *os.File {
-	f, err := os.OpenFile("Link.txt", os.O_CREATE, 0666)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	return f
+func OpenFile(s string) (f *os.File, err error) {
+	return os.OpenFile(s, os.O_WRONLY, 0666)
 }
 
-// Возвращать он ничего не должен.
-func Write(f *os.File, b []byte) {
-	err := os.WriteFile(f.Name(), b, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
+func Write(w io.Writer, b []byte) (i int, err error) {
+	fmt.Println("Writing")
+	return w.Write(b)
 }
 
-func Read(f *os.File) map[string]string {
-	//Читаем файл и получаем массив байт.
-	file, err := os.ReadFile(f.Name())
-	if err != nil {
-		log.Fatal()
-	}
-	//Создаём переменную в которую данные поместятся.
-	m := make(map[string]string)
-
-	err = json.Unmarshal(file, &m)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return m
+func Read(r io.Reader, b []byte) (i int, err error) {
+	return r.Read(b)
 }
