@@ -1,7 +1,7 @@
 package main
 
 import (
-	"project/Lectures/Lesson5/pkg/filer"
+	"fmt"
 	"project/Lectures/Lesson5/pkg/index"
 	"project/Lectures/Lesson5/pkg/lecture_flag"
 	"project/Lectures/Lesson5/pkg/mapper"
@@ -13,17 +13,11 @@ func main() {
 	word := lecture_flag.ParseFlag()
 
 	//Объединяем ссылки в единое.
-
 	name := "Link.txt"
-	m := make(map[string]string)
-
-	if name != "" {
-		m = mapper.MapRead(name)
-	} else {
-		name := "Link.txt"
-		filer.New(name)
-		m = mapper.Scan()
-	}
+	fmt.Println("Check")
+	mapper.ChangeDir()
+	m := mapper.ChekDataFile(name)
+	fmt.Println(m)
 
 	mapper.MapWrite(m, name)
 

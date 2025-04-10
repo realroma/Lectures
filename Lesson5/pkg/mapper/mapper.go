@@ -48,8 +48,34 @@ func Scan() map[string]string {
 	return m
 }
 
-func MapWrite(m map[string]string, name string) {
+func ChangeDir() {
+	gw, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	// Реализация если используется vsl. Сделать потом проверку для рабочей директории
+	err = os.Chdir(gw + "/Lectures/Lesson5/cmd/app")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func New(name string) *os.File {
+	if name == "" {
+		name = "Link.txt"
+		fmt.Println("Файл не указан, создан файл \"Link.txt\".")
+	}
+
+	f, err := os.Create(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return f
+}
+
+func MapWrite(m map[string]string, name string) {
 	b, err := json.Marshal(m)
 	if err != nil {
 		log.Fatal(err)
@@ -73,4 +99,15 @@ func MapRead(name string) map[string]string {
 		log.Fatal(err)
 	}
 	return m
+}
+
+func ChekDataFile(name string) map[string]string {
+	if _, err := os.Stat(name); err == nil {
+		fmt.Println("Файл существует.")
+		return (MapRead(name))
+	} else {
+		fmt.Println("Файл не существует.")
+		New(name)
+		return (Scan())
+	}
 }
