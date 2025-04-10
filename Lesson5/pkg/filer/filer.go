@@ -1,8 +1,6 @@
 package filer
 
 import (
-	"fmt"
-	"io"
 	"log"
 	"os"
 )
@@ -28,17 +26,4 @@ func New(name string) *os.File {
 		log.Fatal(err)
 	}
 	return f
-}
-
-func OpenFile(s string) (f *os.File, err error) {
-	return os.OpenFile(s, os.O_WRONLY, 0666)
-}
-
-func Write(w io.Writer, b []byte) (i int, err error) {
-	fmt.Println("Writing")
-	return w.Write(b)
-}
-
-func Read(r io.Reader, b []byte) (i int, err error) {
-	return r.Read(b)
 }
