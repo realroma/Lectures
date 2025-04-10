@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"project/Lectures/Lesson5/pkg/filer"
 	"project/Lectures/Lesson5/pkg/index"
 	"project/Lectures/Lesson5/pkg/lecture_flag"
@@ -13,16 +12,20 @@ func main() {
 	//Делаем флаг для поиска по словам в консоли.
 	word := lecture_flag.ParseFlag()
 
-	m := mapper.Scan()
-
 	//Объединяем ссылки в единое.
+
 	name := "Link.txt"
-	filer.New(name)
+	m := make(map[string]string)
+
+	if name != "" {
+		m = mapper.MapRead(name)
+	} else {
+		name := "Link.txt"
+		filer.New(name)
+		m = mapper.Scan()
+	}
 
 	mapper.MapWrite(m, name)
-
-	ma := mapper.MapRead(name)
-	fmt.Println(ma)
 
 	itd := index.Indexer(m)
 
