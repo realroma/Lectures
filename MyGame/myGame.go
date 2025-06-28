@@ -10,13 +10,13 @@ import (
 
 func NewP() Player {
 	b := DefaultB()
-	var p Player = Player{0, b, time.Now()}
+	var p Player = Player{0, *b, time.Now()}
 	return p
 }
 
 type Player struct {
 	Balance  int
-	Buisnes  *Busines
+	Buisnes  Busines
 	Previous time.Time
 }
 
@@ -25,18 +25,27 @@ func (p *Player) Work() {
 }
 
 func (p *Player) Pay() {
+	//Узнаём время сейчас.
 	now := time.Now()
-	if now.Sub(p.Previous) > 20 {
-		p.Balance = p.Balance + p.Buisnes.Pay
+
+	//Получаем разницу между сейчас и прошлым разом.
+	diffrent := now.Sub(p.Previous)
+
+	hours, _ := time.ParseDuration("10s")
+	// hours, _ := time.ParseDuration("1h")
+	if diffrent > hours {
+		fmt.Println("Diffrent: ", diffrent)
+		fmt.Println("Diffrent Round: ", diffrent.Seconds())
+		p.Balance = p.Balance + p.Buisnes.Pay*int(diffrent.Seconds())
 		p.Previous = now
+		fmt.Println("Time: ", now)
 	} else {
-		fmt.Println("Time less than 10.")
+		fmt.Println("Ten seconds don't has been left.")
 	}
-	return
 }
 
 // Поинтеры нужны для того чтобы при изменении баланса у структуры, в мапе они так же изменялись, и не подвергались копированию.
-func (p *Player) Buy(b *Busines) {
+func (p *Player) Buy(b Busines) {
 	if p.Balance >= b.Cost {
 		p.Balance, p.Buisnes = p.Balance-b.Cost, b
 		fmt.Println("Sucksess")
@@ -44,8 +53,8 @@ func (p *Player) Buy(b *Busines) {
 	fmt.Println("Dont enough money")
 }
 
-func NewB(name string, cost int, pay int) *Busines {
-	b := Busines{Name: name, Cost: cost, Pay: pay, Grade: ""}
+func NewB(name string, cost int, pay int, grade string) *Busines {
+	b := Busines{Name: name, Cost: cost, Pay: pay, Grade: grade}
 	return &b
 }
 
@@ -56,16 +65,23 @@ type Busines struct {
 	Grade string
 }
 
+func (b *Busines) ChangeGrade(grade string) {
+	b.Grade = grade
+}
+
 func DefaultB() *Busines {
 	if DefaultBusines.Name == "" {
-		return NewB("Farm", 20, 2)
+		return NewB("Farm", 20, 2, "None")
 	}
 	return &DefaultBusines
 }
 
 var DefaultBusines Busines
 
-func handler(scan *bufio.Scanner, p *Player) {
+func handler( /*parent context.Context,*/ scan *bufio.Scanner, p *Player) {
+	// ctx, cancel := context.WithTimeout(parent, 10 * time.Second)
+	// Поступило предложение сделать всё через behavior tree. Оно будет работать через контекст. Интересное предположение.
+	// Ещё заново перебрать контексты.
 	for scan.Scan() {
 		text := strings.ToLower(scan.Text())
 		if text == "exit" {
@@ -79,14 +95,36 @@ func handler(scan *bufio.Scanner, p *Player) {
 			fmt.Println("Player balance today: ", p.Balance)
 			p.Pay()
 			fmt.Println("Balance player: ", p.Balance)
+		} else if text == "grade" {
+			fmt.Println("Widtch grade do you want?")
+			WriteGrade(p)
+			p.Buisnes.ChangeGrade("Not none.")
 		} else {
 			fmt.Println("Wrong command.")
 		}
 	}
 }
 
+func WriteGrade(p *Player) {
+	sc := bufio.NewScanner(os.Stdin)
+	for sc.Scan() {
+		if sc.Text() == "exit" {
+			fmt.Println("Exiting..")
+			return
+		} else if sc.Text() == "home" {
+			p.Buisnes.ChangeGrade("home")
+			fmt.Println(p.Buisnes)
+			return
+		} else {
+			fmt.Println("Wrong command.")
+			return
+		}
+	}
+}
+
 func main() {
 	//Создаём бизнес в доступе.
+	// parent := context.Background()
 	p := NewP()
 	b := DefaultB()
 	fmt.Printf("Busines default: %v \nPlayer: %v \n", b, p)
@@ -94,7 +132,7 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("Write command.")
 
-	handler(scanner, &p)
+	handler( /*parent,*/ scanner, &p)
 
-	fmt.Println(p.Balance, "\n", &p.Buisnes)
+	fmt.Println(p.Balance, "\n", p.Buisnes)
 }
