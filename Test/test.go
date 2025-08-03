@@ -1,75 +1,54 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"image/color"
+	"log"
 	"os"
-	"strconv"
-	"strings"
+
+	"gioui.org/app"
+	"gioui.org/font/gofont"
+	"gioui.org/op"
+	"gioui.org/text"
+	"gioui.org/widget/material"
 )
 
-type Text struct {
-	Content string
-}
-
-func (t *Text) textModifier() {
-	t.Content = strings.ReplaceAll(t.Content, "  ", " ")
-
-	var message string
-
-	r := []rune(t.Content)
-
-	for i, v := range r {
-		//Закрывашка на случаи первого и последнего элемента.
-		if v == '-' && i != 0 && i != len(r)-1 {
-			fmt.Println(i, "", len(r))
-			r[i-1], r[i+1] = r[i+1], r[i-1]
-			t.Content = string(r)
-		}
-	}
-
-	for _, v := range t.Content {
-		switch {
-		case v == '-':
-			message = (message + "")
-		case v == '+':
-			message = (message + "!")
-		default:
-			message = (message + string(v))
-		}
-	}
-
-	t.Content = message
-
-	var integer [10]rune = [10]rune{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
-	var intbuf int
-
-	for _, v := range t.Content {
-		for i, va := range integer {
-			if v == va {
-				t.Content = strings.Replace(t.Content, string(va), "", 1)
-				intbuf = intbuf + i
-			}
-		}
-	}
-
-	if intbuf != 0 {
-		t.Content = t.Content + " " + strconv.Itoa(intbuf)
-	}
-
-	fmt.Println(t.Content)
-
-}
-
 func main() {
-	text := &Text{}
-	fmt.Println("Ведите строку:")
-	scanner := bufio.NewScanner(os.Stdin)
+	go func() {
+		w := new(app.Window)
+		if err := loop(w); err != nil {
+			log.Fatal(err)
+		}
+		os.Exit(0)
+	}()
+	app.Main()
+}
 
-	//	fmt.Println("Ведите строку:.")
+var p float64 = 3.14159
+var cc float64 = 3.2
 
-	for scanner.Scan() {
-		text.Content = scanner.Text()
-		text.textModifier()
+func ring(d float64) string {
+	v := (d * p) / cc
+	return fmt.Sprint("Количество циклов: ", v, " Уголо поворота стола: ", 360/(v*2))
+}
+
+func loop(w *app.Window) error {
+	th := material.NewTheme()
+	th.Shaper = text.NewShaper(text.WithCollection(gofont.Collection()))
+	var ops op.Ops
+	for {
+		switch e := w.Event().(type) {
+		case app.DestroyEvent:
+			//Если убрать эту строчку, то окно будет открываться снова и снова.
+			return e.Err
+		case app.FrameEvent:
+			gtx := app.NewContext(&ops, e)
+			l := material.H1(th, ring(120))
+			maroon := color.NRGBA{R: 0, G: 200, B: 0, A: 255}
+			l.Color = maroon
+			l.Alignment = text.Middle
+			l.Layout(gtx)
+			e.Frame(gtx.Ops)
+		}
 	}
 }
