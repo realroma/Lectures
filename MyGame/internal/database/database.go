@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	b "project/Lectures/MyGame/internal/buisnes"
 
@@ -31,33 +30,52 @@ func Opendb(cfg config) (db *sql.DB) {
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
+
+	//Закыть таблицу тут, через defer, мы не можем. Надо это делать на уровне выше, откуда идёт вызов таблицы.
 	return db
 }
 
-func Exe(db *sql.DB, id int, b b.Buisnes) {
+// Передаём строку в базу данных.
+func Insert(db *sql.DB, id *int, b b.Buisnes, balance int) {
 	fmt.Println("Insert into Database")
-	request, err := db.Exec("INSERT INTO users (id, busineses) VALUES ($1, $1)", id, b)
+	request, err := db.Exec("INSERT INTO users (id, busineses, balance) VALUES ($1, $2, $3)", id, "None", balance)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println("Error in package database:")
+		panic(err)
 	}
 	fmt.Println(request)
 }
 
-func Del(db *sql.DB, id int) {
+// Удаляем из базы данных по id
+func Delete(db *sql.DB, id *int) {
 	fmt.Println("Delete from database")
-	result, err := db.Exec("DELETE FROM users WHERE id = $1", id)
+	result, err := db.Exec("DELETE FROM users WHERE id = $1", &id)
 	if err != nil {
+		fmt.Println("Error in package database:")
 		panic(err)
 	}
 	fmt.Println(result.RowsAffected())
 }
 
-func Found(db *sql.DB, id int) {
+// Находим пользователя по id
+func Select(db *sql.DB, id int) sql.Result {
 	fmt.Println("Found user.")
 	request, err := db.Exec("SELECT FROM users WHERE id = $1", id)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error in package database:")
+		panic(err)
 	}
-	fmt.Println(request)
+	fmt.Println("DB: ", request)
+	return request
+}
+
+// Изменяем данные пользователя
+func Alter(db *sql.DB) {
+	fmt.Println("Alter in database user: ")
+	request, err := db.Exec("ALTER TABLE users ")
+	if err != nil {
+		fmt.Println("Error in package database:")
+		panic(err)
+	}
+	fmt.Println("DB: ", request)
 }

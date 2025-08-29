@@ -24,16 +24,37 @@ func main() {
 	//Создаём бизнес в доступе.
 	// parent := context.Background()
 
+	var player *p.Player
 	b := b.New("None", 0, 0, "none")
-	p := p.New(000)
-	fmt.Printf("Busines default: %v \nPlayer: %v \n", b, p)
+	player = p.New(1)
+	player = nil
+	id := 0
 
+	//Открытие и закрытие базы данных.
 	cfg := daba.Createconfig()
 	db := daba.Opendb(cfg)
+	defer db.Close()
 
-	daba.Exe(db, p.Id, *b)
-	daba.Del(db, p.Id)
-	h.Handler(p)
+	// Получение id и возвращение профиля игрока из базы данных.
+	fmt.Println("Before login: ", player)
+	if player == nil {
+		player = h.Login(db, id)
+	} else {
+		if *player == *p.New(id) {
+			fmt.Println("Login")
+			player = h.Login(db, id)
+		}
+	}
+	fmt.Println("After login: ", player)
 
-	fmt.Println(p.Balance, "\n", p.Buisnes)
+	fmt.Printf("Busines default: %v \nPlayer: %v \n", b, player)
+
+	//Запись/удаление данных.
+	// daba.Insert(db, &p.Id, *b, p.Balance)
+	//daba.Delete(db, &p.Id)
+
+	//Обработка событий.
+	h.Handler(player, db)
+
+	fmt.Println(player.Balance, "\n", player.Buisnes)
 }
