@@ -34,8 +34,6 @@ func main() {
 
 	var player *p.Player
 	b := b.New("None", 0, 0, "none")
-	player = p.New(1)
-	player = nil
 	id := 0
 
 	//Открытие и закрытие базы данных.
@@ -44,15 +42,8 @@ func main() {
 	defer db.Close()
 
 	// Получение id и возвращение профиля игрока из базы данных.
-	fmt.Println("Before login: ", player)
-	if player == nil {
-		player = h.Login(db, id)
-	} else {
-		if *player == *p.New(id) {
-			fmt.Println("Login")
-			player = h.Login(db, id)
-		}
-	}
+	fmt.Println("Login")
+	player = h.Login(db, id)
 	fmt.Println("After login: ", player)
 
 	fmt.Printf("Busines default: %v \nPlayer: %v \n", b, player)

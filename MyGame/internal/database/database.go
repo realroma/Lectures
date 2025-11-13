@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	b "project/Lectures/MyGame/internal/buisnes"
-
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
@@ -36,9 +34,9 @@ func Opendb(cfg config) (db *sql.DB) {
 }
 
 // Передаём строку в базу данных.
-func Insert(db *sql.DB, id *int, b b.Buisnes, balance int) {
+func Insert(db *sql.DB, id *int, balance int) {
 	fmt.Println("Insert into Database")
-	request, err := db.Exec("INSERT INTO users (id, busineses, balance) VALUES ($1, $2, $3)", id, "None", balance)
+	request, err := db.Exec("INSERT INTO users (id, balance) VALUES ($1, $2, $3)", id, balance)
 	if err != nil {
 		fmt.Println("Error in package database:")
 		panic(err)

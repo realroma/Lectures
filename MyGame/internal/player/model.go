@@ -28,13 +28,13 @@ func (p *Player) Pay() {
 	hours, _ := time.ParseDuration("10s")
 	// hours, _ := time.ParseDuration("1h")
 	if diffrent > hours {
-		fmt.Println("Diffrent: ", diffrent)
-		fmt.Println("Diffrent Round: ", diffrent.Seconds())
+		fmt.Println("Player: Diffrent: ", diffrent)
+		fmt.Println("Player: Diffrent Round: ", diffrent.Seconds())
 		p.Balance = p.Balance + (p.Buisnes.Pay * int(diffrent.Seconds()))
 		p.Previous = now
-		fmt.Println("Time: ", now)
+		fmt.Println("Player: Time: ", now)
 	} else {
-		fmt.Println("Ten seconds don't has been left.")
+		fmt.Println("Player: Ten seconds don't has been left.")
 	}
 }
 
@@ -42,9 +42,14 @@ func (p *Player) Pay() {
 func (p *Player) Buy(buisnes b.Buisnes) {
 	if p.Balance >= buisnes.Cost {
 		p.Balance, p.Buisnes = p.Balance-buisnes.Cost, buisnes
-		fmt.Println("Sucksess")
+		fmt.Println("Player: Sucksess")
 	}
-	fmt.Println("Dont enough money")
+	fmt.Println("Player: Dont enough money")
+}
+
+func (p *Player) SendMoney(geter Player, m int) {
+	p.Balance = p.Balance - m
+	geter.Balance = geter.Balance + m
 }
 
 func PPB() {
